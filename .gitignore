@@ -1,0 +1,10 @@
+.idea
+.vscode
+
+/build
+/coverage
+/node_modules
+
+.env
+.DS_STORE
+
