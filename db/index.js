@@ -1,10 +1,6 @@
 const dotenv = require('dotenv');
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
-const usersSeeder = require('./seeders/users.seeder');
-const blogsSeeder = require('./seeders/blogs.seeder');
-const schedulesSeeder = require('./seeders/schedules.seeder');
-
 dotenv.config();
 
 const client = new MongoClient(process.env.MONGO_DB_URI, {
@@ -25,13 +21,6 @@ async function connect () {
     await db.createCollection('users');
     await db.createCollection('schedules');
     await db.createCollection('blogs');
-
-    if (Boolean(process.env.MONGO_DB_USE_SEEDER) && process.env.APP_ENV === 'dev') {
-      await usersSeeder.run(db);
-      await blogsSeeder.run(db);
-      await schedulesSeeder.run(db);
-    }
-
   } finally {
     // Ensures that the client will close when you finish/error
     await client.close();
