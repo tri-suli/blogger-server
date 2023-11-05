@@ -3,14 +3,22 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "db:seed": "node ./bin/seeder"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.3.1",
     "express": "~4.16.1",
+    "lodash": "^4.17.21",
     "mongodb": "^6.2.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.2.0"
   }
 }
