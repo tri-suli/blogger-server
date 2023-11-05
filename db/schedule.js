@@ -1,6 +1,7 @@
 const { client} = require("./index");
 const user = require('./user');
 const {ObjectId} = require("mongodb");
+const _ = require("lodash");
 
 
 /**
@@ -169,7 +170,10 @@ async function findByTitleAndDescription(keyword) {
           $or: [
             {title: { $regex: keyword, $options: 'i' } },
             {description: { $regex: keyword, $options: 'i' } },
-          ]
+          ],
+          deletedAt: {
+            $eq: null
+          }
         }
       },
       {
