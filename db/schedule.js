@@ -106,6 +106,26 @@ async function create(attributes) {
   }
 }
 
+async function destroy(key) {
+  try {
+    await client.connect();
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection('schedules');
+
+    const result = await collection.updateOne({
+      _id: new ObjectId(key)
+    }, {
+      $set: {
+        deletedAt: (new Date).getTime()
+      }
+    });
+
+    return result.modifiedCount === 1;
+  } finally {
+    await client.close();
+  }
+}
+
 async function update(attributes, key) {
   try {
     await client.connect();
@@ -183,6 +203,7 @@ async function findByTitleAndDescription(keyword) {
 
 module.exports = {
   create,
+  destroy,
   update,
   findByCreatorAndId,
   findByTitleAndDescription,
