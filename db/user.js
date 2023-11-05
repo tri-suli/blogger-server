@@ -1,7 +1,4 @@
-const dotenv = require('dotenv');
 const { client} = require("./index");
-
-dotenv.config();
 
 /**
  * Define the schema structure for users collection
@@ -34,12 +31,13 @@ const Schema = {
  * @type {
  *  {
  *    name: {
- *      unique: boolean,
+ *      unique: string,
  *      type: string,
  *      required: boolean
  *    },
  *    email: {
- *      unique: boolean,
+ *      unique: string,
+ *      email: true,
  *      type: string,
  *      required: boolean
  *    },
@@ -49,6 +47,7 @@ const Schema = {
  *    },
  *    password: {
  *      max: number,
+ *      min: number,
  *      type: string,
  *      required: boolean
  *    },
@@ -71,16 +70,18 @@ const SchemaRules = {
   name: {
     type: 'string',
     required: true,
-    unique: true,
+    unique: 'users',
   },
   email: {
     type: 'string',
     required: true,
-    unique: true,
+    unique: 'users',
+    email: true,
   },
   password: {
     type: 'string',
     required: true,
+    min: 8,
     max: 100,
   },
   dob: {
