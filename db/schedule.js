@@ -1,5 +1,6 @@
 const { client} = require("./index");
 const user = require('./user');
+const {ObjectId} = require("mongodb");
 
 
 /**
@@ -105,8 +106,41 @@ async function create(attributes) {
   }
 }
 
+async function update(attributes, key) {
+  try {
+    await client.connect();
+    const id = new ObjectId(key);
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection('schedules');
+
+    const result = await collection.updateOne({
+      _id: id
+    }, {
+      $set: attributes
+    });
+
+    return await collection.findOne({ _id: id })
+  } finally {
+    await client.close();
+  }
+}
+
+async function findByCreatorAndId(id, creator) {
+  try {
+    await client.connect();
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection('schedules');
+
+    return await collection.findOne({ _id: new ObjectId(id), creator });
+  } finally {
+    await client.close();
+  }
+}
+
 module.exports = {
   create,
+  update,
+  findByCreatorAndId,
   Schema,
   Rules: SchemaRules
 }
