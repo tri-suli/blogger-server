@@ -1,8 +1,7 @@
-const dotenv = require('dotenv');
 const { client} = require("./index");
 const user = require('./user');
 
-dotenv.config();
+const COLLECTION_NAME = 'blogs';
 
 /**
  * Define the schema structure for blogs collection
@@ -66,8 +65,7 @@ const SchemaRules = {
   title: {
     type: 'string',
     required: true,
-    min: 15,
-    max: 50,
+    max: 20,
   },
   content: {
     type: 'string',
@@ -93,6 +91,7 @@ const SchemaRules = {
 };
 
 module.exports = {
+  name: COLLECTION_NAME,
   Schema,
   Rules: SchemaRules
 }
