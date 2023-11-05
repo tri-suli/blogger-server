@@ -10,12 +10,8 @@ const validate = require('../utils/validator');
 /* GET users listing. */
 router.get('/', async (req, res, next) => {
   try {
-    let results = [];
     const keyword = req.query.search;
-
-    if (keyword) {
-      results = await dbSchedule.findByTitleAndDescription(keyword);
-    }
+    const results = await dbSchedule.findByTitleAndDescription(keyword);
 
     res.send({
       data: results,
@@ -34,7 +30,7 @@ router.post('/', async (req, res) => {
   const validator = await validate(
     req.body,
     dbSchedule.Rules,
-    ['title', 'description', 'creator']
+    ['title', 'description', 'creator', 'date']
   );
 
   if (!validator.isValid) {
@@ -74,7 +70,7 @@ router.patch('/:id', async (req, res) => {
     const validator = await validate(
       req.body,
       dbSchedule.Rules,
-      ['creator', 'title', 'description']
+      ['creator', 'title', 'description', 'date']
     );
 
     if (!validator.isValid) {

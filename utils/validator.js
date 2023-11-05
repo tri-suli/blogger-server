@@ -37,6 +37,7 @@ const validateUnique = async (collectionName, field, value) => {
 module.exports = async (attributes, rules, fields) => {
   let isValid = true;
   const errors = {};
+  console.log(attributes, rules, fields)
 
   for (const field of fields) {
     const messages = [];

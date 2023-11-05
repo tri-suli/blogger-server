@@ -80,7 +80,7 @@ const SchemaRules = {
     required: true,
     after: (new Date()).getTime(),
   },
-  userId: {
+  creator: {
     type: ObjectId,
     required: true,
     exists: 'users:name,email'
@@ -105,7 +105,10 @@ async function create(attributes) {
     const db = await client.db(process.env.MONGO_DB);
     const collection = await db.collection('schedules');
 
-    const result = await collection.insertOne(attributes);
+    const result = await collection.insertOne({
+      ...attributes,
+      date: (new Date(attributes.date)).getTime()
+    });
 
     return await collection.findOne({ _id: result.insertedId })
   } finally {
@@ -143,7 +146,10 @@ async function update(attributes, key) {
     const result = await collection.updateOne({
       _id: id
     }, {
-      $set: attributes
+      $set: {
+        ..._.omit(attributes, ['_id']),
+        date: (new Date(attributes.date)).getTime()
+      }
     });
 
     return await collection.findOne({ _id: id })
@@ -170,17 +176,22 @@ async function findByTitleAndDescription(keyword) {
     const db = await client.db(process.env.MONGO_DB);
     const collection = await db.collection('schedules');
 
+    const match = {
+      deletedAt: {
+        $eq: null
+      }
+    }
+
+    if (keyword) {
+      match['$or'] = [
+        {title: { $regex: keyword, $options: 'i' } },
+        {content: { $regex: keyword, $options: 'i' } },
+      ];
+    }
+
     return await collection.aggregate([
       {
-        $match: {
-          $or: [
-            {title: { $regex: keyword, $options: 'i' } },
-            {description: { $regex: keyword, $options: 'i' } },
-          ],
-          deletedAt: {
-            $eq: null
-          }
-        }
+        $match: match
       },
       {
         $lookup: {
@@ -196,6 +207,7 @@ async function findByTitleAndDescription(keyword) {
           _id: 1,
           title: 1,
           description: 1,
+          date: 1,
           creator: {
             _id: 1,
             name: 1,
