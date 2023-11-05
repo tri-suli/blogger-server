@@ -137,10 +137,55 @@ async function findByCreatorAndId(id, creator) {
   }
 }
 
+async function findByTitleAndDescription(keyword) {
+  try {
+    await client.connect();
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection('schedules');
+
+    return await collection.aggregate([
+      {
+        $match: {
+          $or: [
+            {title: { $regex: keyword, $options: 'i' } },
+            {description: { $regex: keyword, $options: 'i' } },
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'creator',
+          foreignField: '_id',
+          as: 'creator'
+        }
+      },
+      { $unwind: '$creator' },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          creator: {
+            _id: 1,
+            name: 1,
+            email: 1
+          },
+          createdAt: 1,
+          updatedAt: 1,
+        }
+      }
+    ]).toArray();
+  } finally {
+    await client.close();
+  }
+}
+
 module.exports = {
   create,
   update,
   findByCreatorAndId,
+  findByTitleAndDescription,
   Schema,
   Rules: SchemaRules
 }
