@@ -1,8 +1,6 @@
-const dotenv = require('dotenv');
 const { client} = require("./index");
 const user = require('./user');
 
-dotenv.config();
 
 /**
  * Define the schema structure for blogs collection
@@ -45,7 +43,7 @@ const Schema = {
  *    },
  *    creator: {
  *      type: string,
- *      exists: string[],
+ *      exists: string,
  *      required: boolean
  *    },
  *    createdAt: {
@@ -77,7 +75,7 @@ const SchemaRules = {
   creator: {
     type: 'collection_id',
     required: true,
-    exists: ['users']
+    exists: 'users:name,email'
   },
   createdAt: {
     type: 'date',
@@ -93,7 +91,22 @@ const SchemaRules = {
   }
 };
 
+async function create(attributes) {
+  try {
+    await client.connect();
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection('schedules');
+
+    const result = await collection.insertOne(attributes);
+
+    return await collection.findOne({ _id: result.insertedId })
+  } finally {
+    await client.close();
+  }
+}
+
 module.exports = {
+  create,
   Schema,
   Rules: SchemaRules
 }
