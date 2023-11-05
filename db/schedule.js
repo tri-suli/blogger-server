@@ -3,6 +3,7 @@ const user = require('./user');
 const {ObjectId} = require("mongodb");
 const _ = require("lodash");
 
+const COLLECTION_NAME = 'schedules';
 
 /**
  * Define the schema structure for blogs collection
@@ -65,30 +66,35 @@ const Schema = {
  */
 const SchemaRules = {
   title: {
-    type: 'string',
+    type: String,
     required: true,
     min: 15,
     max: 50,
   },
   description: {
-    type: 'string',
+    type: String,
     required: true,
   },
-  creator: {
-    type: 'collection_id',
+  date: {
+    type: Date,
+    required: true,
+    after: (new Date()).getTime(),
+  },
+  userId: {
+    type: ObjectId,
     required: true,
     exists: 'users:name,email'
   },
   createdAt: {
-    type: 'date',
+    type: Date || null,
     required: false,
   },
   updatedAt: {
-    type: 'date',
+    type: Date || null,
     required: false,
   },
   deletedAt: {
-    type: 'date',
+    type: Date || null,
     required: false,
   }
 };
@@ -206,6 +212,7 @@ async function findByTitleAndDescription(keyword) {
 }
 
 module.exports = {
+  name: COLLECTION_NAME,
   create,
   destroy,
   update,

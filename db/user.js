@@ -1,5 +1,7 @@
 const { client} = require("./index");
 
+const COLLECTION_NAME = 'users';
+
 /**
  * Define the schema structure for users collection
  *
@@ -68,37 +70,40 @@ const Schema = {
  */
 const SchemaRules = {
   name: {
-    type: 'string',
+    type: String,
     required: true,
     unique: 'users',
   },
   email: {
-    type: 'string',
+    type: String,
     required: true,
     unique: 'users',
     email: true,
   },
   password: {
-    type: 'string',
+    type: String,
     required: true,
     min: 8,
     max: 100,
   },
   dob: {
-    type: 'date',
+    type: Date,
     required: false,
   },
   createdAt: {
-    type: 'date',
+    type: Date || null,
     required: false,
+    nullable: false,
   },
   updatedAt: {
-    type: 'date',
+    type: Date,
     required: false,
+    nullable: true,
   },
   deletedAt: {
-    type: 'date',
+    type: Date,
     required: false,
+    nullable: true,
   }
 };
 
@@ -134,6 +139,7 @@ async function findByNameOrEmail (value) {
 }
 
 module.exports = {
+  name: COLLECTION_NAME,
   create,
   findByNameOrEmail,
   Schema,
