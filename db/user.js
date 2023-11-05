@@ -3,6 +3,104 @@ const { client} = require("./index");
 
 dotenv.config();
 
+/**
+ * Define the schema structure for users collection
+ *
+ * @type {
+ *  {
+ *    name: string,
+ *    email: string
+ *    password: string,
+ *    dob: Date,
+ *    createdAt: Date|null,
+ *    updatedAt: Date|null,
+ *    deletedAt: Date|null,
+ *   }
+ * }
+ */
+const Schema = {
+  name: '',
+  email: '',
+  password: '',
+  dob: new Date(),
+  createdAt: null,
+  updatedAt: null,
+  deletedAt: null
+};
+
+/**
+ * Define the schema rules for users collection
+ *
+ * @type {
+ *  {
+ *    name: {
+ *      unique: boolean,
+ *      type: string,
+ *      required: boolean
+ *    },
+ *    email: {
+ *      unique: boolean,
+ *      type: string,
+ *      required: boolean
+ *    },
+ *    dob: {
+ *      type: string,
+ *      required: boolean
+ *    },
+ *    password: {
+ *      max: number,
+ *      type: string,
+ *      required: boolean
+ *    },
+ *    createdAt: {
+ *      type: string,
+ *      required: boolean
+ *    },
+ *    updatedAt: {
+ *      type: string,
+ *      required: boolean
+ *    }
+ *    deletedAt: {
+ *      type: string,
+ *      required: boolean
+ *    },
+ *  }
+ * }
+ */
+const SchemaRules = {
+  name: {
+    type: 'string',
+    required: true,
+    unique: true,
+  },
+  email: {
+    type: 'string',
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: 'string',
+    required: true,
+    max: 100,
+  },
+  dob: {
+    type: 'date',
+    required: false,
+  },
+  createdAt: {
+    type: 'date',
+    required: false,
+  },
+  updatedAt: {
+    type: 'date',
+    required: false,
+  },
+  deletedAt: {
+    type: 'date',
+    required: false,
+  }
+};
+
 async function create(attributes) {
   try {
     await client.connect();
@@ -18,5 +116,7 @@ async function create(attributes) {
 }
 
 module.exports = {
-  create
+  create,
+  Schema,
+  Rules: SchemaRules
 }
