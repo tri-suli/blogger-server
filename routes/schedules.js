@@ -1,5 +1,6 @@
 const express = require('express');
 const _ = require('lodash');
+const { BSON } = require("mongodb");
 
 const router = express.Router();
 const dbSchedule = require('../db/schedule');
@@ -116,6 +117,51 @@ router.patch('/:id', async (req, res) => {
       res.send({
         data: {
           message: `The user doesn\'t have authorized to update the schedule`,
+        },
+        meta: {
+          message: 'Oops, something wrong with the inputs!',
+          timestamp: new Date()
+        }
+      });
+    } else {
+      res.status(500)
+      res.send({
+        data: {},
+        meta: {
+          message: e.message,
+          timestamp: new Date()
+        }
+      })
+    }
+  }
+});
+
+router.delete('/', async (req, res) => {
+  try {
+    const { id, creator } = req.body;
+    const user = await dbUser.findByNameOrEmail(creator);
+    const schedule = await dbSchedule.findByCreatorAndId(id, user._id);
+
+    if (!schedule) {
+      throw new Error('schedule_not_found')
+    }
+
+    const result = await dbSchedule.destroy(schedule._id);
+
+    res.status(200);
+    res.send({
+      data: result,
+      meta: {
+        message: 'Schedule deleted successfully!',
+        timestamp: new Date()
+      }
+    });
+  } catch (e) {
+    if (e instanceof BSON.BSONError) {
+      res.status(404);
+      res.send({
+        data: {
+          message: `Schedule not found!`,
         },
         meta: {
           message: 'Oops, something wrong with the inputs!',
