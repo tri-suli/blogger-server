@@ -90,7 +90,58 @@ const SchemaRules = {
   }
 };
 
+async function all(keyword) {
+  try {
+    await client.connect();
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection(COLLECTION_NAME);
+
+    const match = {
+      deletedAt: {
+        $eq: null
+      }
+    }
+
+    if (keyword) {
+      match['$or'] = [
+        {title: { $regex: keyword, $options: 'i' } },
+        {content: { $regex: keyword, $options: 'i' } },
+      ];
+    }
+
+    return await collection.aggregate([
+      { $match: match },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'creator',
+          foreignField: '_id',
+          as: 'creator'
+        }
+      },
+      { $unwind: '$creator' },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          content: 1,
+          creator: {
+            _id: 1,
+            name: 1,
+            email: 1
+          },
+          createdAt: 1,
+          updatedAt: 1,
+        }
+      }
+    ]).toArray();
+  } finally {
+    await client.close();
+  }
+}
+
 module.exports = {
+  all,
   name: COLLECTION_NAME,
   Schema,
   Rules: SchemaRules

@@ -9,7 +9,7 @@ const generateBlog = (userId) => {
   const date = faker.date.anytime().getTime();
   return {
     title: _.capitalize(faker.lorem.words({ min: 5, max: 20 })),
-    description: faker.lorem.paragraphs(2),
+    content: faker.lorem.paragraphs(2),
     creator: userId,
     createdAt: date,
     updatedAt: date,
