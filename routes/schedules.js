@@ -7,8 +7,26 @@ const dbUser = require('../db/user');
 const validate = require('../utils/validator');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', async (req, res, next) => {
+  try {
+    let results = [];
+    const keyword = req.query.search;
 
+    if (keyword) {
+      results = await dbSchedule.findByTitleAndDescription(keyword);
+    }
+
+    res.send({
+      data: results,
+      meta: {
+        message: 'success!',
+        total: results.length,
+        timestamp: new Date()
+      }
+    });
+  } catch (e) {
+
+  }
 });
 
 router.post('/', async (req, res) => {
