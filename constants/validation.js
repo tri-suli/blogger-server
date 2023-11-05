@@ -13,6 +13,13 @@ const date = 'The :field: field must be a valid date.';
 const email = 'The :field: field must be a valid email address.';
 
 /**
+ * Invalid message for rule exists record.
+ *
+ * @type {string}
+ */
+const exists = 'The selected :field: is invalid.';
+
+/**
  * Invalid message input for rules max.
  *
  * @type {{['array'|'file'|'numeric'|'string']: string}}
@@ -53,6 +60,7 @@ const unique = 'The :field: has already been taken.';
 module.exports = {
   date,
   email,
+  exists,
   max,
   min,
   required,

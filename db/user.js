@@ -116,8 +116,26 @@ async function create(attributes) {
   }
 }
 
+async function findByNameOrEmail (value) {
+  try {
+    await client.connect();
+    const db = await client.db(process.env.MONGO_DB);
+    const collection = await db.collection('users');
+
+    return await collection.findOne({
+      $or: [
+        { name: value },
+        { email: value }
+      ]
+    });
+  } finally {
+    await client.close();
+  }
+}
+
 module.exports = {
   create,
+  findByNameOrEmail,
   Schema,
   Rules: SchemaRules
 }

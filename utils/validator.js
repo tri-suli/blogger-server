@@ -3,6 +3,24 @@ const validator = require('validator');
 const validation = require('../constants/validation');
 const db = require('../db');
 
+const validateExists = async (collectionName, fields, value) => {
+  try {
+    await db.client.connect();
+    // Send a ping to confirm a successful connection
+    const collection = await db.client.db(process.env.MONGO_DB_NAME).collection(collectionName);
+
+    const options = fields.reduce((options, field) => {
+      options.$or.push({ [field]: value });
+      return options;
+    }, { $or: [] });
+    const result = await collection.findOne(options);
+
+    return result === null;
+  } finally {
+    await db.client.close();
+  }
+}
+
 const validateUnique = async (collectionName, field, value) => {
   try {
     await db.client.connect();
@@ -68,6 +86,16 @@ module.exports = async (attributes, rules, fields) => {
         const isUnique = await validateUnique(rule.unique, field, value);
         if (!isUnique) {
           messages.push(validation.unique.replace(':field:', `${field} field`))
+        }
+      }
+
+      if (rule.exists) {
+        const [collection, columns] = rule.exists.split(':')
+        const fields = columns.split(',');
+
+        const isExists = await validateExists(collection, fields, value);
+        if (!!isExists) {
+          messages.push(validation.exists.replace(':field:', `${field} field`))
         }
       }
     }

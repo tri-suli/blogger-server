@@ -10,6 +10,7 @@ dotenv.config();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const schedulesRouter = require('./routes/schedules');
 
 const app = express();
 
@@ -22,5 +23,6 @@ db.connect().catch(console.dir);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/schedules', schedulesRouter);
 
 module.exports = app;
